@@ -1,0 +1,48 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: course-service
+  data:
+    rest:
+      detection-strategy: annotated
+  config:
+    import:
+      - optional:configserver:http://${CONFIG_SERVER_HOST:config-server}:8888
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: course-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.default.type: com.lms.course.event.DepartmentEvent
+
+vault:
+  db_url: jdbc:postgresql://localhost:5432/lmsdb
+  db_username: lmsdb_user
+  db_password: lmsdb123
+  cognito_issuer_uri: https://accounts.google.com
+  cognito_client_id: local-client-id
+  cognito_client_secret: local-client-secret
+  cognito_client_name: Local Cognito Client
+  cognito_domain: https://example.com
+  aws_region: us-east-1
+  aws_access_key: local-access-key
+  aws_secret_key: local-secret-key
+  cognito_user_pool_id: us-east-1_example
+
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+  default-consumes-media-type: application/json
